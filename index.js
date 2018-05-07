@@ -24,12 +24,19 @@ server.listen(8080, function() {
     console.log('%s listening at %s', server.name, server.url);
 });
 
-server.get('/', function(req, res, next) {
+//rota estatica
+server.get('/', restify.plugins.serveStatic({
+    directory: './dist',
+    default: 'index.html'
+}));
+
+// rotas
+server.get('/read', function(req, res, next) {
     knex('newsletters').then((dados) => { res.send(dados); }, next);
     return next();
 });
 
-server.get('/:id', function(req, res, next) {
+server.get('/read/:id', function(req, res, next) {
     const { id } = req.params;
     knex('newsletters')
         .where('id', id)
@@ -40,6 +47,13 @@ server.get('/:id', function(req, res, next) {
             res.send(dados);
         }, next);
 
+    return next();
+});
+
+server.post('/create', function(req, res, next) {
+    knex('newsletters')
+        .insert(req.body)
+        .then((dados) => { res.send(dados); }, next);
     return next();
 });
 
@@ -66,12 +80,5 @@ server.del('/delete/:id', function(req, res, next) {
                 return res.send(new errs.BadRequestError('Nada foi encontrado!'));
             res.send('Dados excluido!');
         }, next);
-    return next();
-});
-
-server.post('/create', function(req, res, next) {
-    knex('newsletters')
-        .insert(req.body)
-        .then((dados) => { res.send(dados); }, next);
     return next();
 });
