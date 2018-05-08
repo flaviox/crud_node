@@ -37,16 +37,24 @@
             const enviar = document.querySelector("#enviar");
 
             enviar.addEventListener('click', create);
+            lista.addEventListener('click', del);
 
             read();
         };
+
+        function templateLista(id, nome, email) {
+            return `
+            <li class="list-group-item">${nome} - ${email} <i class="btn btn-danger delete fa fa-trash pull-right" data-id="${id}"></i></li>
+            
+            `;
+        }
 
         function read() {
             lista.innerHTML = "";
             axios.get('/read')
                 .then((response) => {
                     response.data.forEach(element => {
-                        lista.innerHTML += `<li class="list-group-item">${element.nome} - ${element.email}</li>`;
+                        lista.innerHTML += templateLista(element.id, element.nome, element.email);
                     });
                 })
                 .catch((error) => {
@@ -60,7 +68,7 @@
                     email: email.value
                 })
                 .then((response) => {
-                    read();
+                    lista.innerHTML += templateLista(response.data[0], nome.value, email.value);
                     console.log(response);
                 })
                 .catch((error) => {
@@ -73,8 +81,19 @@
 
         };
 
-        function del() {
+        function del(elemento) {
+            if (elemento.target.classList.contains('delete')) {
+                axios.delete(`/delete/${elemento.target.dataset.id}`)
+                    .then(function(response) {
+                        if (response.status == 200) {
+                            lista.removeChild(elemento.path[1]);
+                        }
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
 
+            }
         };
     </script>
 </body>
