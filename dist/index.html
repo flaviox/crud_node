@@ -8,6 +8,7 @@
     <title>CRUD Node</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous" />
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 
 <body>
@@ -21,7 +22,61 @@
                 <button id="enviar" class="btn btn-primary mt-3">Enviar<i class="fa fa-check" aria-hidden="true"></i></button>
             </div>
         </div>
+        <div class="row mt-5">
+            <div class="col-6">
+                <ul class="listgroup" id="lista"></ul>
+            </div>
+        </div>
     </div>
+
+    <script>
+        window.onload = () => {
+            const lista = document.querySelector("#lista");
+            const nome = document.querySelector("#nome");
+            const email = document.querySelector("#email");
+            const enviar = document.querySelector("#enviar");
+
+            enviar.addEventListener('click', create);
+
+            read();
+        };
+
+        function read() {
+            lista.innerHTML = "";
+            axios.get('/read')
+                .then((response) => {
+                    response.data.forEach(element => {
+                        lista.innerHTML += `<li class="list-group-item">${element.nome} - ${element.email}</li>`;
+                    });
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        };
+
+        function create() {
+            axios.post('/create', {
+                    nome: nome.value,
+                    email: email.value
+                })
+                .then((response) => {
+                    read();
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+        };
+
+        function update() {
+
+        };
+
+        function del() {
+
+        };
+    </script>
 </body>
 
 </html>
